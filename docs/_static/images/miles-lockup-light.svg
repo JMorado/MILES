@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 300" width="1000" height="300">
+  <defs>
+    <linearGradient id="plate" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#1f2b46"/>
+      <stop offset="1" stop-color="#121a2c"/>
+    </linearGradient>
+    <linearGradient id="brass" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#f3cc72"/>
+      <stop offset="1" stop-color="#c98f2c"/>
+    </linearGradient>
+    <radialGradient id="gold" cx="0.36" cy="0.32" r="0.72">
+      <stop offset="0" stop-color="#f6d27e"/>
+      <stop offset="1" stop-color="#c98f2c"/>
+    </radialGradient>
+    <radialGradient id="orange" cx="0.36" cy="0.32" r="0.72">
+      <stop offset="0" stop-color="#ec8b55"/>
+      <stop offset="1" stop-color="#b14f26"/>
+    </radialGradient>
+    <radialGradient id="teal" cx="0.36" cy="0.32" r="0.72">
+      <stop offset="0" stop-color="#a7bfbf"/>
+      <stop offset="1" stop-color="#5b7a7e"/>
+    </radialGradient>
+  </defs>
+  <g transform="scale(0.292969)">
+  <rect x="100" y="100" width="824" height="824" rx="185" fill="url(#plate)"/>
+  <g transform="translate(-14 0)">
+    <path d="M 262 742 L 352 300 L 512 600 L 672 300" fill="none" stroke="#efe4cc" stroke-width="44" stroke-linecap="round" stroke-linejoin="round"/>
+    <g transform="translate(672 300) rotate(-11.5)">
+      <path d="M -22 0 L -22 216 C -22 330 -66 404 -118 458 L 118 458 C 66 404 22 330 22 216 L 22 0 Z" fill="url(#brass)"/>
+      <ellipse cx="0" cy="458" rx="118" ry="32" fill="url(#orange)"/>
+      <ellipse cx="0" cy="452" rx="84" ry="17" fill="#8d3d1d" opacity="0.55"/>
+    </g>
+    <circle cx="262" cy="742" r="58" fill="url(#teal)"/>
+    <circle cx="352" cy="300" r="76" fill="url(#gold)"/>
+    <circle cx="512" cy="600" r="66" fill="url(#orange)"/>
+    <circle cx="672" cy="300" r="76" fill="url(#gold)"/>
+  </g>
+  </g>
+  <path transform="translate(330 75) scale(0.75)" d="M 0 200 L 0 0 L 85 150 L 170 0 L 170 200 M 240 0 L 240 200 M 310 0 L 310 200 L 420 200 M 605 0 L 490 0 L 490 200 L 605 200 M 490 100 L 590 100 M 793 38 C 778 13 755 4 738 4 C 703 4 683 24 683 52 C 683 84 708 94 740 101 C 774 108 800 122 800 152 C 800 181 776 196 740 196 C 711 196 689 184 677 160" fill="none" stroke="#1b2540" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

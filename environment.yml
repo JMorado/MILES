@@ -1,0 +1,13 @@
+# Run MILES:
+#   micromamba env create -f environment.yml
+#   micromamba run -n miles pip install . --no-deps
+name: miles
+channels:
+  - conda-forge
+dependencies:
+  - python>=3.12
+  - pyside6
+  - numpy
+  - pyopengl
+  - openbabel
+  - pip

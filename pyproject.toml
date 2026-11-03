@@ -1,0 +1,113 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "miles-studio"
+dynamic = ["version"]
+description = "Molecular Improvisation & Ligand Exploration Studio: a fast molecule builder and 3D viewer"
+readme = "README.md"
+license = "BSD-3-Clause"
+license-files = ["LICENSE"]
+requires-python = ">=3.12"
+dependencies = [
+    "PySide6>=6.6",
+    "numpy>=1.26",
+    "PyOpenGL>=3.1.7",
+    "openbabel-wheel>=3.1.1",  # conda users: the conda-forge "openbabel" package
+]
+
+[project.optional-dependencies]
+dev = ["pytest", "ruff", "mypy", "ipykernel", "jupyter_client"]
+docs = ["sphinx", "furo"]
+
+[project.scripts]
+miles = "miles.ui.app:main"
+
+# The built-in features, written as plugins; other packages add theirs to the same group
+[project.entry-points."miles.plugins"]
+drawing = "miles.builtin_plugins.drawing"
+movie = "miles.builtin_plugins.movie"
+structure_lookup = "miles.builtin_plugins.structure_lookup"
+select_atoms = "miles.builtin_plugins.select_atoms"
+vibrations = "miles.builtin_plugins.vibrations"
+sequence = "miles.builtin_plugins.sequence"
+conformers = "miles.builtin_plugins.conformers"
+scan = "miles.builtin_plugins.scan"
+align_frames = "miles.builtin_plugins.align_frames"
+superpose = "miles.builtin_plugins.superpose"
+prepare_protein = "miles.builtin_plugins.prepare_protein"
+binding_pocket = "miles.builtin_plugins.binding_pocket"
+ramachandran = "miles.builtin_plugins.ramachandran"
+properties = "miles.builtin_plugins.properties"
+molecular_surface = "miles.builtin_plugins.molecular_surface"
+charges = "miles.builtin_plugins.charges"
+hydrogen_bonds = "miles.builtin_plugins.hydrogen_bonds"
+mutate_residue = "miles.builtin_plugins.mutate_residue"
+grids = "miles.builtin_plugins.grids"
+
+[tool.setuptools.dynamic]
+version = { attr = "miles.__version__" }
+
+[tool.setuptools.packages.find]
+include = ["miles*"]
+
+[tool.setuptools.package-data]
+miles = ["core/data/*.json", "ui/images/*.svg"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 110
+target-version = "py312"
+
+[tool.ruff.lint]
+select = [
+    "E", "W", "F",   # pycodestyle, pyflakes
+    "I",             # import order
+    "B",             # bugbear
+    "UP",            # pyupgrade
+    "N",             # naming
+    "D",             # docstrings (NumPy convention)
+    "SIM", "C4", "RET", "PIE",
+    "NPY",           # NumPy-specific rules
+    "RUF",
+]
+ignore = [
+    "D105",    # magic methods are self-explanatory
+    "D107",    # __init__ is documented on the class
+    "RUF001",  # unicode in strings is intentional (units)
+    "RUF012",  # Qt class attributes (Signals) are not mutable defaults
+    "N803",    # matrices and point sets keep their maths names (R, P, Vt)
+    "N806",
+]
+
+[tool.ruff.lint.pydocstyle]
+convention = "numpy"
+ignore-decorators = ["typing.override"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["D"]
+"miles/ui/*" = ["N802", "N815"]  # Qt method and property names are camelCase
+"miles/builtin_plugins/*" = ["N802", "N815"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["miles"]
+
+[tool.mypy]
+python_version = "3.12"
+packages = ["miles"]
+check_untyped_defs = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_return_any = false
+
+[[tool.mypy.overrides]]
+module = ["openbabel.*", "OpenGL.*"]
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = ["PySide6.*"]
+follow_untyped_imports = true

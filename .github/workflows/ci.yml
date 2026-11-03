@@ -1,0 +1,83 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    name: Tests (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash -el {0}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install system libraries for Qt
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y libegl1 libgl1 libxkbcommon0 libfontconfig1 libdbus-1-3
+      - uses: mamba-org/setup-micromamba@v2
+        with:
+          environment-file: environment-dev.yml
+          cache-environment: true
+      - name: Install the package
+        run: pip install -e . --no-deps --no-build-isolation
+      - name: Lint
+        if: runner.os == 'Linux'
+        run: ruff check miles tests docs/conf.py examples
+      - name: Type check
+        if: runner.os == 'Linux'
+        run: mypy
+      - name: Test
+        run: pytest -q
+
+  installed:
+    # The tests above use the source tree; this job catches files missing from the package
+    name: Tests against the built wheel
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash -el {0}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install system libraries for Qt
+        run: sudo apt-get update && sudo apt-get install -y libegl1 libgl1 libxkbcommon0 libfontconfig1 libdbus-1-3
+      - uses: mamba-org/setup-micromamba@v2
+        with:
+          environment-name: installed
+          create-args: python=3.12 pyside6 numpy pyopengl openbabel pytest pip setuptools>=77 python-build
+      - name: Build and install the wheel
+        run: |
+          python -m build --wheel --no-isolation --outdir dist
+          pip install --no-deps dist/*.whl
+      - name: Test the installed package away from the source tree
+        run: |
+          mkdir ../installed-check
+          cp -R tests examples ../installed-check/
+          cd ../installed-check
+          python -c "import miles; assert 'site-packages' in miles.__file__, miles.__file__"
+          pytest -q -p no:cacheprovider tests
+
+  conda-package:
+    name: Conda package
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash -el {0}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: mamba-org/setup-micromamba@v2
+        with:
+          environment-name: build
+          create-args: rattler-build
+      - name: Build and test the package
+        run: rattler-build build --recipe recipe/recipe.yaml --output-dir dist-conda -c conda-forge
+      - uses: actions/upload-artifact@v4
+        with:
+          name: conda-package
+          path: dist-conda/noarch/*.conda

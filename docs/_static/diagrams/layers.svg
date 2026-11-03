@@ -1,0 +1,45 @@
+<svg class="diagram" viewBox="0 0 760 378" role="img" aria-label="The four layers of the package and what each uses">
+  <defs>
+    <marker id="head-layers" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path class="head" d="M0,0 L10,5 L0,10 z"/>
+    </marker>
+  </defs>
+
+  <rect class="box accent" x="20" y="16" width="720" height="78" rx="12"/>
+  <text class="title" x="40" y="46">ui<tspan class="muted" dx="12">the Qt application</tspan></text>
+  <text class="muted" x="40" y="72">mainwindow &#183; menus &#183; command_palette &#183; document &#183; builder &#183; stage &#183; canvas/ &#183; panels &#183; dialogs</text>
+  <rect class="pill" x="658" y="30" width="70" height="22" rx="11"/>
+  <text class="pill-text" x="693" y="45">PySide6</text>
+
+  <rect class="box" x="20" y="134" width="350" height="86" rx="12"/>
+  <text class="title" x="40" y="164">render<tspan class="muted" dx="12">drawing</tspan></text>
+  <text class="muted" x="40" y="188">scene &#183; picking &#183; camera &#183; cartoon</text>
+  <text class="muted" x="40" y="206">surface &#183; theme &#183; shaders &#183; gl &#183; painter</text>
+  <rect class="pill" x="206" y="148" width="70" height="22" rx="11"/>
+  <text class="pill-text" x="241" y="163">PySide6</text>
+  <rect class="pill" x="282" y="148" width="76" height="22" rx="11"/>
+  <text class="pill-text" x="320" y="163">PyOpenGL</text>
+
+  <rect class="box" x="390" y="134" width="350" height="86" rx="12"/>
+  <text class="title" x="410" y="164">files<tspan class="muted" dx="12">reading, writing, downloading</tspan></text>
+  <text class="muted" x="410" y="188">common &#183; formats &#183; openbabel</text>
+  <text class="muted" x="410" y="206">session &#183; remote</text>
+  <rect class="pill" x="642" y="148" width="86" height="22" rx="11"/>
+  <text class="pill-text" x="685" y="163">Open Babel</text>
+
+  <rect class="box" x="20" y="260" width="720" height="104" rx="12"/>
+  <text class="title" x="40" y="290">core<tspan class="muted" dx="12">the molecule model and chemistry</tspan></text>
+  <text class="muted" x="40" y="314">molecule &#183; elements &#183; geometry &#183; neighbors &#183; building &#183; internal</text>
+  <text class="muted" x="40" y="332">perception &#183; forcefield &#183; chem &#183; fragments &#183; protein &#183; symmetry</text>
+  <text class="muted" x="40" y="350">stereo &#183; surface &#183; volume &#183; vibrations &#183; interactions &#183; superpose &#183; mutation &#183; biopolymer &#183; preparation</text>
+  <rect class="pill" x="578" y="274" width="58" height="22" rx="11"/>
+  <text class="pill-text" x="607" y="289">NumPy</text>
+  <rect class="pill" x="642" y="274" width="86" height="22" rx="11"/>
+  <text class="pill-text" x="685" y="289">Open Babel</text>
+
+  <line class="line" x1="195" y1="94" x2="195" y2="132" marker-end="url(#head-layers)"/>
+  <line class="line" x1="565" y1="94" x2="565" y2="132" marker-end="url(#head-layers)"/>
+  <line class="line" x1="380" y1="94" x2="380" y2="258" marker-end="url(#head-layers)"/>
+  <line class="line" x1="195" y1="220" x2="195" y2="258" marker-end="url(#head-layers)"/>
+  <line class="line" x1="565" y1="220" x2="565" y2="258" marker-end="url(#head-layers)"/>
+</svg>

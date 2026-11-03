@@ -1,0 +1,63 @@
+# Conda package recipe, built with rattler-build:
+#   rattler-build build --recipe recipe/recipe.yaml
+context:
+  name: miles-studio
+  version: "0.1.0"
+  python_min: "3.12"
+
+package:
+  name: ${{ name }}
+  version: ${{ version }}
+
+source:
+  path: ..
+
+build:
+  number: 0
+  noarch: python
+  script: ${{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
+  python:
+    entry_points:
+      - miles = miles.ui.app:main
+
+requirements:
+  host:
+    - python ${{ python_min }}.*
+    - pip
+    - setuptools >=77
+  run:
+    - python >=${{ python_min }}
+    - pyside6
+    - numpy
+    - pyopengl
+    - openbabel
+
+tests:
+  - python:
+      imports:
+        - miles.core.chem
+        - miles.files.formats
+        - miles.render.scene
+      # Open Babel comes from the conda package "openbabel"; pip only knows
+      # the PyPI wheel name used in pyproject.toml, so pip check would fail.
+      pip_check: false
+      python_version: ${{ python_min }}.*
+  - script:
+      - miles --version
+      # every built-in plugin is registered and importable
+      - python -c "import importlib, importlib.metadata as m; eps = m.entry_points(group='miles.plugins'); [importlib.import_module(e.value) for e in eps]; assert len(eps) >= 19, len(eps)"
+      # the data files are installed with the code
+      - python -c "from importlib.resources import files; root = files('miles'); assert root.joinpath('core/data/fragments.json').is_file() and root.joinpath('ui/images/check.svg').is_file()"
+    requirements:
+      run:
+        - python ${{ python_min }}.*
+
+about:
+  summary: "Molecular Improvisation & Ligand Exploration Studio: a fast molecule builder and 3D viewer"
+  description: |
+    MILES builds and shows proteins, ligands, binding pockets and small
+    molecules. Build molecules by clicking and dragging, open about 150
+    chemistry file formats through Open Babel, download proteins by PDB code
+    and export publication pictures.
+  license: BSD-3-Clause
+  license_file: LICENSE

@@ -1,0 +1,26 @@
+# A MILES plugin as an installable package: copy this folder, rename the
+# package, and install it into the environment MILES runs in with
+#   pip install -e . --no-deps
+# MILES finds it through the entry point below at its next start.
+
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "miles-atom-counter"
+version = "0.1.0"
+description = "A MILES plugin that counts the atoms of each element"
+requires-python = ">=3.12"
+# MILES itself is not listed: the plugin is installed into its environment.
+dependencies = []
+
+[project.entry-points."miles.plugins"]
+atom_counter = "miles_atom_counter"
+
+[tool.setuptools]
+packages = ["miles_atom_counter"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]

@@ -1,0 +1,51 @@
+<svg class="diagram" viewBox="0 0 820 245" role="img" aria-label="From molecule to pixels">
+  <defs>
+    <marker id="head-frame" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path class="head" d="M0,0 L10,5 L0,10 z"/>
+    </marker>
+  </defs>
+
+  <rect class="group" x="156" y="12" width="488" height="120" rx="14"/>
+  <text class="muted" x="170" y="30" font-weight="600">SceneCache</text>
+
+  <rect class="box" x="10" y="42" width="130" height="56" rx="10"/>
+  <text class="title center" x="75" y="66">Molecule</text>
+  <text class="muted center" x="75" y="84">with Style and Theme</text>
+
+  <rect class="box accent" x="170" y="42" width="120" height="56" rx="10"/>
+  <text class="title center" x="230" y="66">build_scene</text>
+  <text class="muted center" x="230" y="84">walks atoms and bonds</text>
+
+  <rect class="box" x="320" y="42" width="150" height="56" rx="10"/>
+  <text class="title center" x="395" y="66">Scene</text>
+  <text class="muted center" x="395" y="84">spheres, cylinders, mesh</text>
+
+  <rect class="box accent" x="500" y="42" width="130" height="56" rx="10"/>
+  <text class="title center" x="565" y="66">highlights</text>
+  <text class="muted center" x="565" y="84">selection, hover, tint</text>
+
+  <rect class="box" x="660" y="42" width="150" height="56" rx="10"/>
+  <text class="title center" x="735" y="66">Frame</text>
+  <text class="muted center" x="735" y="84">arrays, what changed</text>
+
+  <line class="line" x1="140" y1="70" x2="168" y2="70" marker-end="url(#head-frame)"/>
+  <line class="line" x1="290" y1="70" x2="318" y2="70" marker-end="url(#head-frame)"/>
+  <line class="line" x1="470" y1="70" x2="498" y2="70" marker-end="url(#head-frame)"/>
+  <line class="line" x1="630" y1="70" x2="658" y2="70" marker-end="url(#head-frame)"/>
+
+  <text class="muted center" x="230" y="120">when the structure, style or theme changes</text>
+  <text class="muted center" x="565" y="120">when the mouse moves</text>
+
+  <path class="line" d="M735,98 V140 H555 V160" marker-end="url(#head-frame)"/>
+  <line class="line" x1="735" y1="140" x2="735" y2="160" marker-end="url(#head-frame)"/>
+
+  <rect class="box accent" x="460" y="162" width="190" height="56" rx="10"/>
+  <text class="title center" x="555" y="186">GLRenderer</text>
+  <text class="muted center" x="555" y="204">upload what changed, draw</text>
+
+  <rect class="box" x="670" y="162" width="140" height="56" rx="10"/>
+  <text class="title center" x="740" y="186">paint_scene</text>
+  <text class="muted center" x="740" y="204">QPainter fallback</text>
+
+  <text class="muted center" x="640" y="238">every frame</text>
+</svg>

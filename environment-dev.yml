@@ -1,0 +1,26 @@
+# Develop MILES (tests, lint, type checks, documentation, packaging):
+#   micromamba env create -f environment-dev.yml
+#   micromamba run -n miles-dev pip install -e . --no-deps --no-build-isolation
+name: miles-dev
+channels:
+  - conda-forge
+dependencies:
+  - python=3.12
+  - pyside6
+  - numpy
+  - pyopengl
+  - openbabel
+  - pip
+  - setuptools>=77
+  # checks
+  - pytest
+  - ruff
+  - mypy
+  - ipykernel        # the Jupyter test of miles.launch
+  - jupyter_client
+  # documentation
+  - sphinx
+  - furo
+  # conda packaging
+  - rattler-build
+  - python-build

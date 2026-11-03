@@ -1,0 +1,49 @@
+<svg class="diagram" viewBox="0 0 820 400" role="img" aria-label="Sequence of calls when a click attaches a fragment">
+  <defs>
+    <marker id="head-edit" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path class="head" d="M0,0 L10,5 L0,10 z"/>
+    </marker>
+  </defs>
+
+  <rect class="box accent" x="20" y="16" width="120" height="40" rx="10"/>
+  <text class="title center" x="80" y="41">Canvas</text>
+  <rect class="box" x="170" y="16" width="120" height="40" rx="10"/>
+  <text class="title center" x="230" y="41">BuildTool</text>
+  <rect class="box" x="350" y="16" width="140" height="40" rx="10"/>
+  <text class="title center" x="420" y="41">Document</text>
+  <rect class="box" x="540" y="16" width="140" height="40" rx="10"/>
+  <text class="title center" x="610" y="41">core.building</text>
+  <rect class="box" x="700" y="16" width="110" height="40" rx="10"/>
+  <text class="title center" x="755" y="41">Other views</text>
+
+  <line class="lifeline" x1="80" y1="56" x2="80" y2="390"/>
+  <line class="lifeline" x1="230" y1="56" x2="230" y2="390"/>
+  <line class="lifeline" x1="420" y1="56" x2="420" y2="390"/>
+  <line class="lifeline" x1="610" y1="56" x2="610" y2="390"/>
+  <line class="lifeline" x1="755" y1="56" x2="755" y2="390"/>
+
+  <path class="line" d="M80,84 H104 V100 H82" marker-end="url(#head-edit)"/>
+  <text x="112" y="96">1  pick(position)</text>
+
+  <line class="line" x1="80" y1="136" x2="228" y2="136" marker-end="url(#head-edit)"/>
+  <text class="center" x="155" y="128">2  click(hit)</text>
+
+  <line class="line" x1="230" y1="176" x2="418" y2="176" marker-end="url(#head-edit)"/>
+  <text class="center" x="325" y="168">3  edit(attach_fragment)</text>
+
+  <path class="line" d="M420,204 H444 V220 H422" marker-end="url(#head-edit)"/>
+  <text x="452" y="216">4  copy to undo stack</text>
+
+  <line class="line" x1="420" y1="256" x2="608" y2="256" marker-end="url(#head-edit)"/>
+  <text class="center" x="515" y="248">5  attach_fragment(mol)</text>
+  <line class="line dashed" x1="610" y1="282" x2="422" y2="282" marker-end="url(#head-edit)"/>
+  <text class="muted center" x="515" y="276">molecule changed in place</text>
+
+  <path class="line" d="M420,312 H444 V328 H422" marker-end="url(#head-edit)"/>
+  <text x="452" y="324">6  revision + 1</text>
+
+  <line class="line" x1="420" y1="366" x2="82" y2="366" marker-end="url(#head-edit)"/>
+  <text class="center" x="250" y="358">7  changed: rebuild scene, repaint</text>
+  <line class="line" x1="420" y1="366" x2="753" y2="366" marker-end="url(#head-edit)"/>
+  <text class="center" x="590" y="358">7  changed: panel, title, undo</text>
+</svg>

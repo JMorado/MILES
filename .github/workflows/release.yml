@@ -1,0 +1,43 @@
+name: Release
+
+# Push a tag such as v0.3.0 to publish a release. The tag must match
+# miles.__version__ and the version in recipe/recipe.yaml.
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash -el {0}
+    env:
+      ANACONDA_API_KEY: ${{ secrets.ANACONDA_API_TOKEN }}
+      ANACONDA_OWNER: ${{ vars.ANACONDA_OWNER }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: mamba-org/setup-micromamba@v2
+        with:
+          environment-name: build
+          create-args: python=3.12 rattler-build python-build
+      - name: Check that the tag matches the version
+        run: |
+          version=$(sed -n 's/^__version__ = "\(.*\)"/\1/p' miles/__init__.py)
+          test "v$version" = "$GITHUB_REF_NAME" || { echo "Tag $GITHUB_REF_NAME does not match version $version"; exit 1; }
+          grep -q "version: \"$version\"" recipe/recipe.yaml || { echo "recipe/recipe.yaml has another version"; exit 1; }
+      - name: Build the Python packages
+        run: python -m build --outdir dist
+      - name: Build and test the conda package
+        run: rattler-build build --recipe recipe/recipe.yaml --output-dir dist-conda -c conda-forge
+      - name: Upload to anaconda.org
+        if: env.ANACONDA_API_KEY != '' && env.ANACONDA_OWNER != ''
+        run: rattler-build upload anaconda dist-conda/noarch/*.conda
+      - name: Create the GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "$GITHUB_REF_NAME" --title "$GITHUB_REF_NAME" --generate-notes dist/* dist-conda/noarch/*.conda
