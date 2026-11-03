@@ -13,7 +13,7 @@
 <p align="center">
   <a href="https://github.com/JMorado/MILES/actions/workflows/ci.yml"><img src="https://github.com/JMorado/MILES/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
   <a href="https://jmorado.github.io/MILES/"><img src="https://github.com/JMorado/MILES/actions/workflows/docs.yml/badge.svg" alt="Documentation"></a>
-  <a href="https://anaconda.org/jmorado/miles-studio"><img src="https://img.shields.io/conda/vn/jmorado/miles-studio.svg" alt="Conda version"></a>
+  <a href="https://anaconda.org/jmorado/miles-studio"><img src="https://img.shields.io/conda/vn/jmorado/miles-studio.svg?label=conda" alt="Conda version"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-BSD--3--Clause-blue.svg" alt="License: BSD-3-Clause"></a>
   <img src="https://img.shields.io/badge/python-3.12%2B-blue.svg" alt="Python 3.12+">
   <img src="https://img.shields.io/badge/platform-macOS%20%7C%20Linux-lightgrey.svg" alt="Platforms: macOS and Linux">

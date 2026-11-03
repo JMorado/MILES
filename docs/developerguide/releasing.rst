@@ -62,9 +62,11 @@ people can install a release as soon as it is tagged:
 2. Under your account settings, create an access token with permission to
    upload packages.
 3. In the GitHub repository, open **Settings > Secrets and variables >
-   Actions**. Add a secret ``ANACONDA_API_TOKEN`` with the token, and a
-   variable ``ANACONDA_OWNER`` with your anaconda.org user or organisation
-   name.
+   Actions**. Add a secret ``ANACONDA_API_TOKEN`` with the token on the
+   **Secrets** tab, and a variable ``ANACONDA_OWNER`` with your
+   anaconda.org user or organisation name on the **Variables** tab.
+   Secrets and variables of an environment, or for Codespaces or
+   Dependabot, do not reach the workflow.
 
 Users then install with:
 
@@ -73,7 +75,8 @@ Users then install with:
    micromamba create -n miles -c <owner> -c conda-forge miles-studio
 
 Without the secret and the variable the upload step is skipped and the
-release still happens.
+release still happens; a warning in the summary of the run says which
+one was missing.
 
 Making a release
 ****************

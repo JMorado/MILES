@@ -37,6 +37,11 @@ jobs:
       - name: Upload to anaconda.org
         if: env.ANACONDA_API_KEY != '' && env.ANACONDA_OWNER != ''
         run: rattler-build upload anaconda dist-conda/noarch/*.conda
+      - name: Say why nothing was uploaded
+        if: env.ANACONDA_API_KEY == '' || env.ANACONDA_OWNER == ''
+        run: |
+          test -n "$ANACONDA_API_KEY" || echo "::warning::No upload to anaconda.org: the repository has no Actions secret ANACONDA_API_TOKEN"
+          test -n "$ANACONDA_OWNER" || echo "::warning::No upload to anaconda.org: the repository has no Actions variable ANACONDA_OWNER"
       - name: Create the GitHub release
         env:
           GH_TOKEN: ${{ github.token }}
