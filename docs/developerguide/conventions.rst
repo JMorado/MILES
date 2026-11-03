@@ -107,6 +107,7 @@ Distribution
 * The package installs a ``miles`` command that opens files, PDB codes,
   compound names or SMILES strings given on the command line.
 * Releases are published as a conda package; the GitHub workflows test every
-  change on Linux, macOS and Windows and build the package on every tag.
+  change on Linux and macOS and build the package on every tag. Windows is
+  not tested yet.
 * Standalone executables for Linux, macOS and Windows are planned, built with
   PyInstaller by GitHub Actions.

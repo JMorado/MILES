@@ -73,7 +73,11 @@ select = [
     "SIM", "C4", "RET", "PIE",
     "NPY",           # NumPy-specific rules
     "RUF",
+    "PLW1514",       # files opened without an encoding read differently on Windows
 ]
+# PLW1514 is still a preview rule; only preview rules named in select are turned on
+preview = true
+explicit-preview-rules = true
 ignore = [
     "D105",    # magic methods are self-explanatory
     "D107",    # __init__ is documented on the class

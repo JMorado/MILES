@@ -51,7 +51,7 @@ def test_linux_desktop_entry(app: QApplication, tmp_path) -> None:
     python = "/opt/envs/my miles/bin/python"
     entry, icon = desktop.install_linux(tmp_path, python)
     assert icon == tmp_path / "icons" / "hicolor" / "scalable" / "apps" / "miles.svg"
-    assert icon.read_text().startswith("<svg")
+    assert icon.read_text(encoding="utf-8").startswith("<svg")
     parser = configparser.ConfigParser(interpolation=None)
     parser.optionxform = str  # type: ignore[assignment,method-assign]   # keys are case-sensitive
     parser.read(entry)
@@ -72,7 +72,7 @@ def test_macos_bundle(app: QApplication, tmp_path) -> None:
     assert info["CFBundleIdentifier"] == desktop.IDENTIFIER
     launcher = contents / "MacOS" / "MILES"
     assert os.access(launcher, os.X_OK)
-    assert '"$here/python" -P -m miles "$@"' in launcher.read_text()
+    assert '"$here/python" -P -m miles "$@"' in launcher.read_text(encoding="utf-8")
     assert os.readlink(contents / "MacOS" / "python") == sys.executable
     assert (contents / "Resources" / "MILES.icns").read_bytes()[:4] == b"icns"
     again = desktop.install_macos(tmp_path, sys.executable)   # making it again replaces the old one

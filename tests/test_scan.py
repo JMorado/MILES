@@ -83,7 +83,7 @@ def write_xyz(path: Path, comments: list[str]) -> None:
     for k, comment in enumerate(comments):
         lines += ["3", comment, f"O 0.0 0.0 {0.117 + 0.001 * k:.4f}",
                   "H 0.0 0.757 -0.469", "H 0.0 -0.757 -0.469"]
-    path.write_text("\n".join(lines) + "\n")
+    path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
 @pytest.mark.parametrize("comments, first", [

@@ -104,15 +104,16 @@ def test_reload_imports_a_package_plugin_and_its_own_modules_again(app, tmp_path
     package.mkdir(parents=True)
     (package / "__init__.py").write_text("from .helper import VALUE\n\n"
                                          "def register(context):\n"
-                                         "    context.info.description = str(VALUE)\n")
-    (package / "helper.py").write_text("VALUE = 1\n")
+                                         "    context.info.description = str(VALUE)\n", encoding="utf-8")
+    (package / "helper.py").write_text("VALUE = 1\n", encoding="utf-8")
     monkeypatch.setenv(FOLDER_ENV, str(folder))
     monkeypatch.delenv(NO_PLUGINS_ENV, raising=False)
     window = MainWindow(QSettings(str(tmp_path / "settings.ini"), QSettings.Format.IniFormat))
     try:
         info = next(i for i in window.plugins.plugins if i.key == "file:valued")
         assert info.description == "1"
-        (package / "helper.py").write_text("VALUE = 22\n")   # another size: no stale bytecode
+        # another size: no stale bytecode
+        (package / "helper.py").write_text("VALUE = 22\n", encoding="utf-8")
         window.plugins.reload(info)
         assert info.description == "22" and info.state == PluginState.LOADED
     finally:
@@ -123,11 +124,12 @@ def test_reload_imports_a_module_plugin_again(miles_app, tmp_path, monkeypatch):
     (tmp_path / "counted").mkdir()
     (tmp_path / "counted" / "__init__.py").write_text("from .helper import VALUE\n\n"
                                                      "def register(context):\n"
-                                                     "    context.info.description = str(VALUE)\n")
-    (tmp_path / "counted" / "helper.py").write_text("VALUE = 1\n")
+                                                     "    context.info.description = str(VALUE)\n",
+                                                     encoding="utf-8")
+    (tmp_path / "counted" / "helper.py").write_text("VALUE = 1\n", encoding="utf-8")
     monkeypatch.syspath_prepend(str(tmp_path))
     info = load_plugin(miles_app, importlib.import_module("counted"))
-    (tmp_path / "counted" / "helper.py").write_text("VALUE = 22\n")
+    (tmp_path / "counted" / "helper.py").write_text("VALUE = 22\n", encoding="utf-8")
     importlib.invalidate_caches()
     assert reload_plugin(miles_app, info).description == "22"
     sys.modules.pop("counted", None)

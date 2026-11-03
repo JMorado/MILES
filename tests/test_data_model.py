@@ -99,7 +99,7 @@ def test_pdb_files_give_occupancy_and_b_factors(tmp_path):
     from miles.files.formats import read_file
 
     path = tmp_path / "ala.pdb"
-    path.write_text(PDB)
+    path.write_text(PDB, encoding="utf-8")
     mol, _ = read_file(str(path))
     assert mol.has_property("b_factor") and mol.has_property("occupancy")
     by_name = dict(zip(mol.column("name").tolist(), mol.column("b_factor").tolist(), strict=True))

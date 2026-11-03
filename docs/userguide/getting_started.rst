@@ -6,6 +6,9 @@ Getting Started
 Installing MILES
 *********************
 
+MILES runs on macOS and Linux. Windows is not tested yet: MILES may work
+there, but nothing checks that it does.
+
 MILES is a Python package. It needs Python 3.12 or newer and four
 libraries: PySide6 (Qt), NumPy, PyOpenGL and Open Babel. The simplest way to
 get all of them is a conda environment from conda-forge. The repository
@@ -72,7 +75,7 @@ Linux
    appears in the application menu and its windows get the MILES icon in
    the dock and the task switcher.
 
-Windows
+Windows (not tested yet)
    A MILES shortcut with the icon in the Start menu. The taskbar shows
    MILES with its own icon however it was started.
 

@@ -29,16 +29,21 @@ MAX_LIST_HEIGHT = 300
 
 
 def when(seconds: float, now: datetime.datetime | None = None) -> str:
-    """Time of an autosave as it reads in the list: "Today 14:32", "Yesterday 09:05" or a date."""
+    """Time of an autosave as it reads in the list: "Today 14:32", "Yesterday 09:05" or a date.
+
+    Times and dates follow the locale (``QLocale()``, the system's unless
+    changed), so "Today 2:32 PM" in the United States.
+    """
     moment = datetime.datetime.fromtimestamp(seconds)
     today = (now or datetime.datetime.now()).date()
-    clock = moment.strftime("%H:%M")
+    stamp = QDateTime.fromSecsSinceEpoch(int(seconds))
+    locale = QLocale()
+    clock = locale.toString(stamp.time(), QLocale.FormatType.ShortFormat)
     if moment.date() == today:
         return f"Today {clock}"
     if moment.date() == today - datetime.timedelta(days=1):
         return f"Yesterday {clock}"
-    date = QDateTime.fromSecsSinceEpoch(int(seconds))
-    return QLocale.system().toString(date, QLocale.FormatType.ShortFormat)
+    return locale.toString(stamp, QLocale.FormatType.ShortFormat)
 
 
 class RecoveryDialog(QDialog):

@@ -69,7 +69,7 @@ def main() -> None:
         lines.extend(f"{atom.symbol:2s} {px:12.6f} {py:12.6f} {pz:12.6f}"
                      for atom, (px, py, pz) in zip(mol.atoms, x, strict=True))
     out = Path(__file__).with_name("alanine_dipeptide_md.xyz")
-    out.write_text("\n".join(lines) + "\n")
+    out.write_text("\n".join(lines) + "\n", encoding="utf-8")
     print(f"wrote {out}: {FRAMES} frames, final temperature {temperature(v):.0f} K")
 
 

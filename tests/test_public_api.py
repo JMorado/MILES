@@ -24,7 +24,7 @@ def _documented(prefix: str) -> set[str]:
     """Names documented with a directive for ``prefix.<name>`` in the API reference."""
     if not DOCS.is_dir():
         pytest.skip("the documentation is not next to the tests (an installed package is tested)")
-    text = "\n".join(path.read_text() for path in DOCS.glob("*.rst"))
+    text = "\n".join(path.read_text(encoding="utf-8") for path in DOCS.glob("*.rst"))
     pattern = rf"^\.\. (?:auto)?(?:function|class|data|attribute|exception):: {re.escape(prefix)}\.(\w+)\s*$"
     return set(re.findall(pattern, text, re.MULTILINE))
 

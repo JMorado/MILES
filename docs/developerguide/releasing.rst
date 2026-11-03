@@ -16,7 +16,7 @@ Workflows
      - Does
    * - ``ci.yml``
      - every push to ``main`` and every pull request
-     - Runs the tests on Linux, macOS and Windows, ruff and mypy on Linux,
+     - Runs the tests on Linux and macOS, ruff and mypy on Linux,
        and builds and tests the conda package.
    * - ``docs.yml``
      - every push to ``main``
@@ -70,7 +70,7 @@ Users then install with:
 
 .. code-block:: bash
 
-   micromamba create -n miles -c <owner> -c conda-forge miles
+   micromamba create -n miles -c <owner> -c conda-forge miles-studio
 
 Without the secret and the variable the upload step is skipped and the
 release still happens.

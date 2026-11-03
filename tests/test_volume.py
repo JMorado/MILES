@@ -23,7 +23,7 @@ BOHR = 0.529177210903
 def write_cube(path, values, origin_bohr, step_bohr, atoms, comment="test grid"):
     """Write a Gaussian cube file with an orthogonal grid (all lengths in bohr)."""
     n = values.shape
-    with open(path, "w") as f:
+    with open(path, "w", encoding="utf-8") as f:
         f.write(f"test job\n{comment}\n")   # the second line says what the grid holds
         f.write(f"{len(atoms):5d}" + "".join(f"{x:12.6f}" for x in origin_bohr) + "\n")
         for axis in range(3):

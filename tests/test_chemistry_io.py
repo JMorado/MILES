@@ -78,7 +78,7 @@ def test_formal_charges_survive_writing_an_sdf_file(tmp_path, smiles, net):
     assert sorted(set(mol.column("formal_charge").tolist())) == sorted({0, net})   # stated by the file
     out = tmp_path / "out.sdf"
     write_file(str(out), mol, info)
-    assert any(line.startswith("M  CHG") for line in out.read_text().splitlines())
+    assert any(line.startswith("M  CHG") for line in out.read_text(encoding="utf-8").splitlines())
     back, _ = read_file(str(out))
     assert formal_charges(back).sum() == net
 
@@ -112,7 +112,7 @@ ATOM      5  CB  SER A   1      12.000   9.000   9.000  1.00  0.00           C
 ATOM      6  OG  SER A   1      13.400   9.000   9.000  1.00  0.00           O
 HETATM    7 NA    NA A 301      20.000  20.000  20.000  1.00  0.00          NA
 END
-""")
+""", encoding="utf-8")
     mol, _ = read_file(str(serine))
     charges = formal_charges(mol).tolist()
     assert charges[:6] == [0] * 6        # no hydrogens: a hydroxyl oxygen is not taken for an anion
@@ -121,7 +121,7 @@ END
 
 def test_pdb_charge_columns_are_stated_charges(tmp_path):
     path = tmp_path / "ions.pdb"
-    path.write_text(IONS)
+    path.write_text(IONS, encoding="utf-8")
     mol, _ = read_file(str(path))
     assert mol.atoms[0].formal_charge == 2       # "2+" in columns 79-80
     assert mol.atoms[1].formal_charge is None    # blank: not stated
@@ -131,7 +131,7 @@ def test_pdb_charge_columns_are_stated_charges(tmp_path):
 
 def test_writing_pdb_keeps_chains_residue_numbers_and_b_factors(tmp_path):
     path = tmp_path / "in.pdb"
-    path.write_text(PEPTIDE)
+    path.write_text(PEPTIDE, encoding="utf-8")
     mol, info = read_file(str(path))
     out = tmp_path / "out.pdb"
     write_file(str(out), mol, info)
@@ -144,7 +144,7 @@ def test_writing_pdb_keeps_chains_residue_numbers_and_b_factors(tmp_path):
 
 def test_insertion_codes_and_alternate_locations(tmp_path):
     path = tmp_path / "ins.pdb"
-    path.write_text(INSERTION)
+    path.write_text(INSERTION, encoding="utf-8")
     mol, info = read_file(str(path))
     assert mol.column("icode").tolist() == [""] * 4 + ["A"] * 5
     assert mol.column("altloc").tolist() == [""] * 5 + ["A", "B", "", ""]
@@ -171,7 +171,7 @@ def test_pdb_ligand_bonds_and_ions_are_written(tmp_path):
     back = read_text(text, "pdb")
     assert sorted(back.bond_orders.tolist()) == sorted(ligand.bond_orders.tolist())   # C=O kept by repeating
     path = tmp_path / "ions.pdb"
-    path.write_text(IONS)
+    path.write_text(IONS, encoding="utf-8")
     ions, _ = read_file(str(path))
     assert [line[76:80] for line in pdb_text(ions).splitlines() if line.startswith("HETATM")][:2] == ["ZN2+",
                                                                                                     "NA1+"]
@@ -189,7 +189,7 @@ def test_built_molecules_get_residue_and_atom_names_in_pdb_files():
 def test_different_molecules_of_one_file_are_not_frames(tmp_path):
     xyz = tmp_path / "two.xyz"
     xyz.write_text("3\nwater\nO 0 0 0\nH 0.957 0 0\nH -0.24 0.927 0\n"
-                   "3\nhydrogen cyanide\nH 0 0 -1.066\nC 0 0 0\nN 0 0 1.156\n")
+                   "3\nhydrogen cyanide\nH 0 0 -1.066\nC 0 0 0\nN 0 0 1.156\n", encoding="utf-8")
     mol, info = read_file(str(xyz))
     assert mol.symbols == ["O", "H", "H"] and info.frames is None
     assert any("1 more structure" in note for note in info.notes)
@@ -208,7 +208,7 @@ def test_different_molecules_of_one_file_are_not_frames(tmp_path):
 def test_frames_of_one_molecule_are_still_read(tmp_path):
     xyz = tmp_path / "traj.xyz"
     steps = (f"3\nstep {k}\nO 0 0 0\nH {0.95 + 0.01 * k} 0 0\nH -0.24 0.93 0\n" for k in range(3))
-    xyz.write_text("".join(steps))
+    xyz.write_text("".join(steps), encoding="utf-8")
     _, info = read_file(str(xyz))
     assert info.frames is not None and info.frames.shape == (3, 3, 3)
     assert not info.notes
@@ -218,7 +218,7 @@ def test_frames_of_one_molecule_are_still_read(tmp_path):
 
 def test_ions_and_metals_from_files_get_no_hydrogens(tmp_path):
     path = tmp_path / "ions.pdb"
-    path.write_text(IONS)
+    path.write_text(IONS, encoding="utf-8")
     mol, _ = read_file(str(path))
     assert add_hydrogens(mol) == 2
     assert [len(mol.hydrogens_on(i)) for i in range(5)] == [0, 0, 0, 0, 2]
@@ -268,7 +268,7 @@ def test_fitting_template_sites_matches_a_fit_per_assignment():
 
 def test_typing_all_atoms_at_once_matches_typing_each(tmp_path):
     path = tmp_path / "ions.pdb"
-    path.write_text(IONS + PEPTIDE)
+    path.write_text(IONS + PEPTIDE, encoding="utf-8")
     smiles = ("CC(=O)Oc1ccccc1C(=O)O", "C=C=C", "O=C=O", "CC#N", "NC(=N)N", "C1CC1")
     cases = [from_smiles(s)[0] for s in smiles]
     cases.append(read_file(str(path))[0])

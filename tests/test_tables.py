@@ -104,17 +104,18 @@ def test_vibrations_data_and_picture(window, tmp_path, monkeypatch):
     assert copied[0] == "Mode\tWavenumber (cm-1)\tIR intensity (km/mol)" and len(copied) == 4
     save_to(monkeypatch, tmp_path / "modes.csv")
     panel.exportRequested.emit(DATA)
-    assert len(rows_of((tmp_path / "modes.csv").read_text())) == 4
+    assert len(rows_of((tmp_path / "modes.csv").read_text(encoding="utf-8"))) == 4
     save_to(monkeypatch, tmp_path / "curve.csv")
     panel.exportRequested.emit(CURVE)
-    assert rows_of((tmp_path / "curve.csv").read_text())[0] == ["Wavenumber (cm-1)", "Absorbance (relative)"]
+    rows = rows_of((tmp_path / "curve.csv").read_text(encoding="utf-8"))
+    assert rows[0] == ["Wavenumber (cm-1)", "Absorbance (relative)"]
     for name in ("spectrum.png", "spectrum.svg"):
         save_to(monkeypatch, tmp_path / name)
         panel.exportRequested.emit(IMAGE)
         assert (tmp_path / name).stat().st_size > 1000
     image = QImage(str(tmp_path / "spectrum.png"))
     assert image.width() == 3 * panel.spectrum.width()
-    assert (tmp_path / "spectrum.svg").read_text().lstrip().startswith("<?xml")
+    assert (tmp_path / "spectrum.svg").read_text(encoding="utf-8").lstrip().startswith("<?xml")
 
 
 def test_timeline_data(window, tmp_path, monkeypatch):
@@ -125,7 +126,7 @@ def test_timeline_data(window, tmp_path, monkeypatch):
     assert [text for text, _ in timeline.menu_entries()] == ["Copy Data", "Export Data..."]
     save_to(monkeypatch, tmp_path / "frames.csv")
     timeline.exportRequested.emit(DATA)
-    rows = rows_of((tmp_path / "frames.csv").read_text())
+    rows = rows_of((tmp_path / "frames.csv").read_text(encoding="utf-8"))
     assert len(rows) == 201 and rows[0][0] == "Frame" and rows[0][-1] == "RMSD from frame 1 (angstrom)"
     assert any(title.startswith("Dihedral") and title.endswith("(deg)") for title in rows[0])
 

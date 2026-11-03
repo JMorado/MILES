@@ -69,7 +69,7 @@ def test_launch_checks_paths_and_names_first(fresh):
 def test_open_raises_instead_of_showing_a_dialog(fresh, tmp_path):
     app = miles.launch(settings=fresh)
     bad = tmp_path / "notes.unknownformat"
-    bad.write_text("not a structure\n")
+    bad.write_text("not a structure\n", encoding="utf-8")
     with pytest.raises(FileFormatError):
         app.open(str(bad))
     assert QApplication.activeModalWidget() is None
@@ -123,7 +123,7 @@ def _kernel(tmp_path: Path) -> Any:
     spec.mkdir(parents=True)
     spec.joinpath("kernel.json").write_text(json.dumps({
         "argv": [sys.executable, "-m", "ipykernel_launcher", "-f", "{connection_file}"],
-        "display_name": "MILES test", "language": "python"}))
+        "display_name": "MILES test", "language": "python"}), encoding="utf-8")
     env = dict(os.environ, QT_QPA_PLATFORM="offscreen", MILES_SOFTWARE="1",
                MILES_PLUGIN_DIR=str(tmp_path / "no-plugins"),
                MILES_FRAGMENT_DIR=str(tmp_path / "no-fragments"),

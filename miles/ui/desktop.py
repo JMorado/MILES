@@ -105,7 +105,7 @@ def install_macos(folder: Path, python: str) -> Path:
         "# Start MILES with the Python next to this file, a link to the environment it was made for:\n"
         "# running it from inside the bundle is what makes macOS call the program MILES.\n"
         'here="$(dirname "$(readlink -f "$0")")"\n'
-        f'exec "$here/python" {" ".join(LAUNCH)} "$@"\n')
+        f'exec "$here/python" {" ".join(LAUNCH)} "$@"\n', encoding="utf-8")
     launcher.chmod(0o755)
     (contents / "MacOS" / "python").symlink_to(python)
     write_icns(contents / "Resources" / f"{NAME}.icns")
@@ -148,7 +148,7 @@ def install_linux(data: Path, python: str) -> list[Path]:
         f"Icon={SLUG}\n"
         "Terminal=false\n"
         "Categories=Science;Chemistry;Education;\n"
-        f"StartupWMClass={SLUG}\n")
+        f"StartupWMClass={SLUG}\n", encoding="utf-8")
     return [entry, icon]
 
 

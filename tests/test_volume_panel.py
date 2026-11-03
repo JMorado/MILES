@@ -66,7 +66,7 @@ def write_cube(path, function, atoms=WATER, n=24):
     lines += [f"{z:5d}{float(z):12.6f}" + "".join(f"{c / BOHR:12.6f}" for c in xyz) for z, xyz in atoms]
     rows = values.reshape(n * n, n)
     lines += ["".join(f"{v:13.5E}" for v in row[k:k + 6]) for row in rows for k in range(0, n, 6)]
-    path.write_text("\n".join(lines) + "\n")
+    path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
 def density(points):

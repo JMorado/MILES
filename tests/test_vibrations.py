@@ -56,7 +56,7 @@ def test_molden_frequencies_and_intensities_are_read(tmp_path, intensities_first
     else:                   # the order many programs write
         text = "[Molden Format]\n" + MOLDEN_MODES + MOLDEN_INTENSITIES
     path = tmp_path / "water.molden"
-    path.write_text(text)
+    path.write_text(text, encoding="utf-8")
     mol, info = read_file(str(path))
     assert mol.symbols == ["O", "H", "H"]
     assert [m.frequency for m in info.vibrations] == [1600.0, 3700.0, 3800.0]

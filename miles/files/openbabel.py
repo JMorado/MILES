@@ -373,7 +373,7 @@ def add_pdb_columns(source: str | Iterable[str], mol: Molecule, charges: bool = 
         Read formal charges (not for PDBQT files).
     """
     if isinstance(source, str):
-        with open(source, errors="replace") as fh:
+        with open(source, encoding="utf-8", errors="replace") as fh:
             records = pdb_records(fh, charges)
     else:
         records = pdb_records(source, charges)
@@ -564,7 +564,7 @@ def _molden_intensities(path: str) -> list[float]:
     """
     values: list[float] = []
     inside = False
-    with open(path, errors="replace") as f:
+    with open(path, encoding="utf-8", errors="replace") as f:
         for line in f:
             text = line.strip()
             if text.startswith("["):
@@ -582,7 +582,7 @@ def _molden_intensities(path: str) -> list[float]:
 
 def _cube_comment(path: str) -> str:
     """Second line of a cube file, which says what the grid holds (the first is the job title)."""
-    with open(path, errors="replace") as f:
+    with open(path, encoding="utf-8", errors="replace") as f:
         f.readline()
         return f.readline().strip()
 

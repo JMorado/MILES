@@ -84,6 +84,7 @@ for _ext in ("pdb", "ent"):
     REGISTRY.register(_ext, writer=pdb.write)       # keeps residues, B-factors and alternate locations
 
 COMMON_WRITE = ["xyz", "sdf", "mol", "mol2", "pdb", "cif", "cml"]
+"""Formats listed first when saving, if this installation can write them (some Open Babel builds lack CML)."""
 
 
 def read_filter() -> str:
@@ -94,7 +95,8 @@ def read_filter() -> str:
 
 def write_filter() -> str:
     """File dialog filter with the common writable formats first, then those added by plugins."""
-    common = ";;".join(f"{e.upper()} (*.{e})" for e in COMMON_WRITE)
+    writable = set(REGISTRY.write_extensions())
+    common = ";;".join(f"{e.upper()} (*.{e})" for e in COMMON_WRITE if e in writable)
     added = "".join(f";;{e.upper()} (*.{e})" for e in REGISTRY.own_writers()
                     if e != session.EXTENSION and e not in COMMON_WRITE)
     return f"{common}{added};;Session with styles (*.miles);;Any other format (*)"

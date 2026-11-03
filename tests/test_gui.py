@@ -505,7 +505,7 @@ def write_cube(path, n=24):
     lines += [f"{z:5d}{float(z):12.6f}" + "".join(f"{c * bohr:12.6f}" for c in xyz) for z, xyz in atoms]
     rows = values.reshape(n * n, n)
     lines += ["".join(f"{v:13.5E}" for v in row[k:k + 6]) for row in rows for k in range(0, n, 6)]
-    path.write_text("\n".join(lines) + "\n")
+    path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
 def test_command_palette_runs_a_command(window):
@@ -662,6 +662,10 @@ def test_ramachandran_panel(window):
     n, ca, c = (next(i for i in ala if mol.atoms[i].name == name) for name in ("N", "CA", "C"))
     previous_c = next(i for i, a in enumerate(mol.atoms) if a.resseq == 3 and a.name == "C")
     set_dihedral(mol, previous_c, n, ca, c, -120.0)   # one point apart from the others
+    # The helix puts every other residue on the same point, so the residue clicked first gets its own too
+    gly = {mol.atoms[i].name: i for i, a in enumerate(mol.atoms) if a.resseq == 2}
+    first_c = next(i for i, a in enumerate(mol.atoms) if a.resseq == 1 and a.name == "C")
+    set_dihedral(mol, first_c, gly["N"], gly["CA"], gly["C"], -150.0)
     window.open_structure(mol, JobInfo(title="helix"))
     canvas = canvas_of(window)
     panel = window.stage.floating_panels()["ramachandran"]

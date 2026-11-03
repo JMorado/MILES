@@ -131,7 +131,7 @@ def problems(plugin: Plugin) -> list[str]:
     found = []
     for path in plugin.files:
         where = path.relative_to(ROOT) if path.is_relative_to(ROOT) else path.name
-        for node in ast.walk(ast.parse(path.read_text(), str(path))):
+        for node in ast.walk(ast.parse(path.read_text(encoding="utf-8"), str(path))):
             if isinstance(node, ast.Import):
                 found += [f"{where}:{node.lineno} imports {alias.name}" for alias in node.names
                           if not _allowed(alias.name, plugin, path)]
@@ -157,7 +157,7 @@ def problems(plugin: Plugin) -> list[str]:
 
 def _imported_modules(path: Path) -> set[str]:
     modules = set()
-    for node in ast.walk(ast.parse(path.read_text(), str(path))):
+    for node in ast.walk(ast.parse(path.read_text(encoding="utf-8"), str(path))):
         if isinstance(node, ast.Import):
             modules |= {alias.name for alias in node.names}
         elif isinstance(node, ast.ImportFrom) and node.level == 0 and node.module:
@@ -178,7 +178,7 @@ FRONTS = {PACKAGE / "__init__.py", *(PACKAGE / "plugin").glob("*.py")}
 def _names_used(path: Path) -> set[str]:
     """Names a module refers to: plain names, imported names and attributes of a module or object."""
     names = set()
-    for node in ast.walk(ast.parse(path.read_text(), str(path))):
+    for node in ast.walk(ast.parse(path.read_text(encoding="utf-8"), str(path))):
         if isinstance(node, ast.Name):
             names.add(node.id)
         elif isinstance(node, ast.ImportFrom):
@@ -209,7 +209,7 @@ def test_the_check_catches_reaches_into_internals(tmp_path: Path) -> None:
                       "import miles.render.scene\nfrom miles import core\n"
                       "from miles.builtin_plugins.scan import relaxed_scan\n\n"
                       "def run(app, doc):\n    app.window.close()\n"
-                      "    doc.canvas.redraw()\n    doc._canvas.redraw()\n")
+                      "    doc.canvas.redraw()\n    doc._canvas.redraw()\n", encoding="utf-8")
     found = problems(Plugin("bad", "miles.builtin_plugins.bad", (source,), True, tmp_path))
     assert len(found) == 9
 
@@ -220,7 +220,7 @@ def test_the_check_reads_relative_imports(tmp_path: Path) -> None:
     source = package / "__init__.py"
     source.write_text("from . import helpers\nfrom .helpers import tidy\nfrom ..scan import relaxed_scan\n"
                       "from .. import charges\nfrom ...core.molecule import Molecule\n"
-                      "from ...plugin.widgets import Table\n")
+                      "from ...plugin.widgets import Table\n", encoding="utf-8")
     found = problems(Plugin("bad", "miles.builtin_plugins.bad", (source,), True, tmp_path))
     assert found == [f"{source.name}:3 imports from miles.builtin_plugins.scan",
                      f"{source.name}:4 imports miles.builtin_plugins.charges",

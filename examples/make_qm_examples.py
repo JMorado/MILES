@@ -101,7 +101,7 @@ def quiet() -> Iterator[None]:
     sys.stdout.flush()
     sys.stderr.flush()
     saved = [os.dup(1), os.dup(2)]
-    with open(os.devnull, "w") as null:
+    with open(os.devnull, "w", encoding="utf-8") as null:
         os.dup2(null.fileno(), 1)
         os.dup2(null.fileno(), 2)
         try:
@@ -159,9 +159,9 @@ def retitle(path: Path, title: str, description: str) -> None:
     description : str
         Second line, the quantity on the grid.
     """
-    lines = path.read_text().splitlines(keepends=True)
+    lines = path.read_text(encoding="utf-8").splitlines(keepends=True)
     lines[0], lines[1] = title + "\n", description + "\n"
-    path.write_text("".join(lines))
+    path.write_text("".join(lines), encoding="utf-8")
 
 
 def write_cube(path: Path, writer: Callable[..., np.ndarray], mol: gto.Mole, data: np.ndarray,
@@ -282,7 +282,7 @@ def formaldehyde() -> None:
     modes = np.asarray(analysis["norm_mode"]).real
     path = OUT / "formaldehyde.molden"
     molden.from_scf(mf, str(path))
-    with open(path, "a") as f:
+    with open(path, "a", encoding="utf-8") as f:
         f.write(vibration_sections(mf.mol, frequencies, infrared(mf.mol, modes), modes))
 
 

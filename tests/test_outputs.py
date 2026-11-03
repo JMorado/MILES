@@ -46,7 +46,7 @@ def test_files_that_report_empty_structures_at_the_end_are_read(tmp_path):
     # after the last one forever; reading must stop (it hung before)
     path = tmp_path / "water.mop"
     path.write_text(" PM7\nwater\n\n  O 0.0 1 0.0 1 0.12 1\n"
-                    "  H 0.0 1 0.76 1 -0.48 1\n  H 0.0 1 -0.76 1 -0.48 1\n")
+                    "  H 0.0 1 0.76 1 -0.48 1\n  H 0.0 1 -0.76 1 -0.48 1\n", encoding="utf-8")
     code = f"from miles.files.formats import read_file; print(len(read_file({str(path)!r})[0]))"
     done = subprocess.run([sys.executable, "-c", code], capture_output=True, text=True, timeout=120)
     assert done.returncode == 0 and done.stdout.split()[-1] == "3"
@@ -91,7 +91,7 @@ def orca_scan(steps: int) -> str:
 def test_orca_scans_show_the_last_geometry_with_every_step(tmp_path):
     # Open Babel kept only the first geometry of an ORCA scan
     path = tmp_path / "scan.out"
-    path.write_text(orca_scan(3))
+    path.write_text(orca_scan(3), encoding="utf-8")
     mol, info = read_file(str(path))
     assert info.frames.shape == (3, 3, 3)
     assert mol.coords[0, 2] == pytest.approx(0.12)
@@ -136,7 +136,7 @@ def test_qchem_steps_charge_and_multiplicity(tmp_path):
                  + " ----------------------------------------------------------------\n"
                  f" Total energy in the final basis set =      -76.4{k}000000\n")
     path = tmp_path / "opt.out"
-    path.write_text(text)
+    path.write_text(text, encoding="utf-8")
     _, info = read_file(str(path))
     assert info.frames.shape == (2, 3, 3) and len(info.energies) == 2
     assert (info.charge, info.multiplicity) == (1, 2)
@@ -234,7 +234,7 @@ def fchk(geometries: int = 1, modes: bool = False) -> str:
 
 def test_checkpoint_charges_dipole_and_modes(tmp_path):
     path = tmp_path / "water.fchk"
-    path.write_text(fchk(modes=True))
+    path.write_text(fchk(modes=True), encoding="utf-8")
     _, info = read_file(str(path))
     assert (info.charge, info.multiplicity) == (1, 2)
     assert info.charges == pytest.approx([-0.6, 0.3, 0.3])
@@ -247,7 +247,7 @@ def test_checkpoint_charges_dipole_and_modes(tmp_path):
 def test_checkpoint_with_every_step_shows_the_last(tmp_path):
     # Q-Chem writes the records again for every step; Open Babel read only the first
     path = tmp_path / "opt.fchk"
-    path.write_text(fchk(geometries=3))
+    path.write_text(fchk(geometries=3), encoding="utf-8")
     mol, info = read_file(str(path))
     assert info.frames.shape == (3, 3, 3) and len(info.energies) == 3
     assert mol.coords[0, 2] == pytest.approx(0.2267671 * 0.529177, abs=1e-5)
@@ -257,7 +257,7 @@ def test_checkpoint_with_every_step_shows_the_last(tmp_path):
 
 def test_gamess_uk_is_not_read_as_gamess(tmp_path):
     path = tmp_path / "job.out"
-    path.write_text("          GAMESS-UK  version 8.0\n")
+    path.write_text("          GAMESS-UK  version 8.0\n", encoding="utf-8")
     assert input_format(str(path)) == "gukout"
 
 
@@ -293,7 +293,7 @@ GAMESS_UK = textwrap.dedent("""\
 def test_gamess_uk_frequency_outputs_do_not_abort(tmp_path):
     # Open Babel's GAMESS-UK reader aborts the whole program on the normal modes
     path = tmp_path / "freq.out"
-    path.write_text(GAMESS_UK)
+    path.write_text(GAMESS_UK, encoding="utf-8")
     code = f"from miles.files.formats import read_file; print(len(read_file({str(path)!r})[0]))"
     done = subprocess.run([sys.executable, "-c", code], capture_output=True, text=True, timeout=120)
     assert done.returncode == 0 and done.stdout.split()[-1] == "3"
@@ -301,7 +301,8 @@ def test_gamess_uk_frequency_outputs_do_not_abort(tmp_path):
 
 def test_outputs_of_programs_open_babel_cannot_read_say_so(tmp_path):
     path = tmp_path / "job.out"
-    path.write_text("          Psi4: An Open-Source Ab Initio Electronic Structure Package\n")
+    path.write_text("          Psi4: An Open-Source Ab Initio Electronic Structure Package\n",
+                    encoding="utf-8")
     with pytest.raises(FileFormatError, match="output of Psi4"):
         read_file(str(path))
 
@@ -313,7 +314,8 @@ def test_formats_open_babel_only_writes_are_not_read_with_it(tmp_path):
 
 def test_files_with_no_structure_say_how_they_were_read(tmp_path):
     path = tmp_path / "job.inp"
-    path.write_text("! B3LYP def2-SVP\n* xyz 0 1\nO 0 0 0\n*\n")   # ORCA input, read as GAMESS input
+    # ORCA input, read as GAMESS input
+    path.write_text("! B3LYP def2-SVP\n* xyz 0 1\nO 0 0 0\n*\n", encoding="utf-8")
     with pytest.raises(FileFormatError, match="read as GAMESS Input"):
         read_file(str(path))
 
@@ -356,7 +358,7 @@ def test_orbitals_in_an_unknown_convention_are_left_out_with_a_note(tmp_path):
     with pytest.raises(ValueError, match="not normalised"):
         read_molden_orbitals(one_d_shell([[2.0 * c for c in vector] for vector in ORBITALS]))
     path = tmp_path / "h.molden"
-    path.write_text(one_d_shell([[2.0 * c for c in vector] for vector in ORBITALS]))
+    path.write_text(one_d_shell([[2.0 * c for c in vector] for vector in ORBITALS]), encoding="utf-8")
     mol, info = read_file(str(path))
     assert info.orbitals is None and len(mol) == 1
     assert info.notes and "orbitals were left out" in info.notes[0]
@@ -388,7 +390,7 @@ def test_gaussian_input_with_cartesian_coordinates(tmp_path):
     path = tmp_path / "water.gjf"
     path.write_text("%chk=water.chk\n%mem=1GB\n#p hf/sto-3g opt   ! comment\n\nwater molecule\n\n0 1\n"
                     "O     0.000000   0.000000   0.117300\nH  -1  0.000000   0.757200  -0.469200\n"
-                    "H,0.000000,-0.757200,-0.469200\n\n")
+                    "H,0.000000,-0.757200,-0.469200\n\n", encoding="utf-8")
     mol, info = read_file(str(path))
     assert mol.formula() == "H2O" and len(mol.bonds) == 2
     assert (info.title, info.charge, info.multiplicity) == ("water molecule", 0, 1)
@@ -427,7 +429,7 @@ def test_molden_labels_in_capitals_are_elements(tmp_path):
                     " s    1 1.00\n   1.0000000000      1.0000000000\n\n  2 0\n s    1 1.00\n"
                     "   1.0000000000      1.0000000000\n\n"
                     "[MO]\n Sym= A\n Ene= -0.5\n Spin= Alpha\n Occup= 2.0\n"
-                    " 1 1.0\n 2 0.0\n")
+                    " 1 1.0\n 2 0.0\n", encoding="utf-8")
     mol, info = read_file(str(path))
     assert mol.symbols == ["Cu", "H"] and len(mol.bonds) == 1
     assert info.orbitals is not None and not info.notes

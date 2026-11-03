@@ -208,7 +208,7 @@ def test_a_running_miles_keeps_its_copies_until_it_stops(make_window, folder, tm
         win.autosave.wait()
         print("ready", flush=True)
         sys.stdin.readline()
-    """))
+    """), encoding="utf-8")
     env = dict(os.environ, **{autosave.FOLDER_ENV: str(folder), plugins.NO_PLUGINS_ENV: "1"})
     other = subprocess.Popen([sys.executable, str(script), str(tmp_path / "other.ini")], env=env,
                              stdin=subprocess.PIPE, stdout=subprocess.PIPE, text=True)
@@ -285,10 +285,22 @@ def test_switching_autosave_off(make_window, folder):
 def test_autosave_times_read_naturally():
     import datetime
 
+    from PySide6.QtCore import QLocale
+
     now = datetime.datetime(2026, 11, 3, 15, 0)
-    assert when(datetime.datetime(2026, 11, 3, 14, 32).timestamp(), now) == "Today 14:32"
-    assert when(datetime.datetime(2026, 11, 2, 9, 5).timestamp(), now) == "Yesterday 09:05"
-    assert "14" in when(datetime.datetime(2026, 10, 30, 14, 0).timestamp(), now)
+    recent = datetime.datetime(2026, 11, 3, 14, 32).timestamp()
+    older = datetime.datetime(2026, 10, 30, 14, 0).timestamp()
+    previous = QLocale()
+    try:
+        QLocale.setDefault(QLocale("en_GB"))
+        assert when(recent, now) == "Today 14:32"
+        assert when(datetime.datetime(2026, 11, 2, 9, 5).timestamp(), now) == "Yesterday 09:05"
+        assert when(older, now).startswith("30/10/") and "14:00" in when(older, now)
+        QLocale.setDefault(QLocale("en_US"))
+        assert when(recent, now).startswith("Today 2:32") and when(recent, now).endswith("PM")
+        assert when(older, now).startswith("10/30/") and "2:00" in when(older, now)
+    finally:
+        QLocale.setDefault(previous)
     assert autosave.interval_text(1) == "Every minute" and autosave.interval_text(0) == "Off"
 
 
@@ -364,7 +376,7 @@ def test_plugin_settings_are_in_settings(app, tmp_path, monkeypatch, folder):
 
     plugin_folder = tmp_path / "plugins"
     plugin_folder.mkdir()
-    (plugin_folder / "cutoffs.py").write_text(SETTINGS)
+    (plugin_folder / "cutoffs.py").write_text(SETTINGS, encoding="utf-8")
     monkeypatch.setenv(plugins.FOLDER_ENV, str(plugin_folder))
     monkeypatch.delenv(plugins.NO_PLUGINS_ENV, raising=False)
     win = MainWindow(QSettings(str(tmp_path / "settings.ini"), QSettings.Format.IniFormat))

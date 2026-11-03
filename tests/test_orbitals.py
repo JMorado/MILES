@@ -60,7 +60,7 @@ Occup= 2.0
 
 
 def test_h2_orbitals_are_read():
-    orbitals = read_molden_orbitals(H2.read_text())
+    orbitals = read_molden_orbitals(H2.read_text(encoding="utf-8"))
     assert orbitals is not None
     assert [o.energy for o in orbitals.orbitals] == [-0.5782, 0.6703]
     assert [o.occupation for o in orbitals.orbitals] == [2.0, 0.0]
@@ -74,7 +74,7 @@ def test_h2_orbitals_are_read():
 
 
 def test_h2_orbitals_are_orthonormal_on_a_grid():
-    orbitals = read_molden_orbitals(H2.read_text())
+    orbitals = read_molden_orbitals(H2.read_text(encoding="utf-8"))
     assert orbitals is not None
     bonding = orbitals.evaluate(0, spacing=0.1)
     antibonding = orbitals.evaluate(1, spacing=0.1)
@@ -92,7 +92,7 @@ def test_coefficients_of_bare_primitives_give_the_same_basis():
     norms = [(2 * a / math.pi) ** 0.75 for a in STO3G_EXPONENTS]
     pairs = zip(STO3G_EXPONENTS, STO3G_COEFFICIENTS, norms, strict=True)
     rows = "\n".join(f"{a} {c * n}" for a, c, n in pairs)
-    text = H2.read_text()
+    text = H2.read_text(encoding="utf-8")
     bare = text.split("[GTO]")[0] + f"[GTO]\n1 0\ns 3 1.0\n{rows}\n\n2 0\ns 3 1.0\n{rows}\n\n[MO]" \
         + text.split("[MO]")[1]
     standard, scaled = read_molden_orbitals(text), read_molden_orbitals(bare)
@@ -152,12 +152,12 @@ def test_orca_files_flip_high_m_spherical_functions():
 
 def test_files_without_a_basis_have_no_orbitals():
     assert read_molden_orbitals("[Molden Format]\n[Atoms] Angs\nH 1 1 0 0 0\n") is None
-    assert read_molden_orbitals(H2.read_text().split("[MO]")[0]) is None
+    assert read_molden_orbitals(H2.read_text(encoding="utf-8").split("[MO]")[0]) is None
 
 
 def test_inconsistent_coefficients_are_rejected():
     with pytest.raises(ValueError, match="basis function 3"):
-        read_molden_orbitals(H2.read_text() + "   3    0.1\n")
+        read_molden_orbitals(H2.read_text(encoding="utf-8") + "   3    0.1\n")
 
 
 def test_labels_count_from_the_frontier_orbitals():
@@ -265,18 +265,18 @@ def grid_integral(volume, spacing):
 
 
 def test_electron_density_integrates_to_the_electrons():
-    orbitals = read_molden_orbitals(H2.read_text())
+    orbitals = read_molden_orbitals(H2.read_text(encoding="utf-8"))
     density = orbitals.density()
     assert density.name == DENSITY_NAME and not density.signed
     assert grid_integral(density, 0.25) == pytest.approx(2.0, abs=0.01)
-    formaldehyde = read_molden_orbitals((EXAMPLES / "formaldehyde.molden").read_text())
+    formaldehyde = read_molden_orbitals((EXAMPLES / "formaldehyde.molden").read_text(encoding="utf-8"))
     assert grid_integral(formaldehyde.density(spacing=0.15), 0.15) == pytest.approx(16.0, abs=0.5)
     with pytest.raises(ValueError, match="alpha and beta"):
         orbitals.spin_density()
 
 
 def test_spin_density_of_an_open_shell_molecule_holds_one_electron():
-    orbitals = read_molden_orbitals((EXAMPLES / "nitrogen_dioxide.molden").read_text())
+    orbitals = read_molden_orbitals((EXAMPLES / "nitrogen_dioxide.molden").read_text(encoding="utf-8"))
     spin = orbitals.spin_density()
     assert spin.name == SPIN_NAME
     assert grid_integral(spin, 0.25) == pytest.approx(1.0, abs=0.05)   # one unpaired electron

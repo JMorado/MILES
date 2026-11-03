@@ -198,7 +198,7 @@ def test_builtin_entry_points_are_declared_but_not_loaded_twice(make_window, fol
 
 
 def test_folder_plugin_adds_commands_panel_reader_and_hooks(make_window, folder, tmp_path, errors):
-    (folder / "counter.py").write_text(COUNTER)
+    (folder / "counter.py").write_text(COUNTER, encoding="utf-8")
     win = make_window()
     info = find(win, "file:counter.py")
     assert info.state == PluginState.LOADED and (info.name, info.version) == ("Counter", "0.3")
@@ -233,7 +233,7 @@ def test_folder_plugin_adds_commands_panel_reader_and_hooks(make_window, folder,
     doc.edit(lambda m: m.remove_atoms([8]))
     assert ("selection", (1, 2)) in events and ("structure", 8) in events
     toy = tmp_path / "three.toy"
-    toy.write_text("C O C")
+    toy.write_text("C O C", encoding="utf-8")
     win.open_path(str(toy))
     assert ("opened", "three.toy") in events and ("current", "three.toy") in events
     assert [a.symbol for a in api.current.molecule.atoms] == ["C", "O", "C"]
@@ -252,7 +252,7 @@ def test_folder_plugin_adds_commands_panel_reader_and_hooks(make_window, folder,
 
 
 def test_theme_frame_and_change_events(make_window, folder, errors):
-    (folder / "watcher.py").write_text(WATCHER)
+    (folder / "watcher.py").write_text(WATCHER, encoding="utf-8")
     win = make_window()
     assert find(win, "file:watcher.py").state == PluginState.LOADED
     events = sys.modules["miles_user_plugins.watcher"].events
@@ -291,8 +291,8 @@ def test_theme_frame_and_change_events(make_window, folder, errors):
 
 def test_failures_are_recorded_and_reported_once(make_window, folder, errors):
     for name, source in BROKEN.items():
-        (folder / name).write_text(source)
-    (folder / "counter.py").write_text(COUNTER)
+        (folder / name).write_text(source, encoding="utf-8")
+    (folder / "counter.py").write_text(COUNTER, encoding="utf-8")
     win = make_window()
     states = {info.key: info.state for info in win.plugins.plugins}
     assert states["file:a_import_error.py"] == PluginState.FAILED
@@ -319,10 +319,11 @@ def test_failures_are_recorded_and_reported_once(make_window, folder, errors):
 
 def test_a_failing_file_reader_gives_a_message(make_window, folder, tmp_path, monkeypatch):
     (folder / "bad_reader.py").write_text(
-        "def register(context):\n    context.add_file_reader('bad', lambda path: {}['missing'])\n")
+        "def register(context):\n    context.add_file_reader('bad', lambda path: {}['missing'])\n",
+        encoding="utf-8")
     win = make_window()
     path = tmp_path / "x.bad"
-    path.write_text("")
+    path.write_text("", encoding="utf-8")
     with pytest.raises(FileFormatError, match="bad_reader plugin could not handle"):
         read_file(str(path))
     warnings = []
@@ -339,7 +340,7 @@ def test_entry_point_plugins(make_window, folder, tmp_path, monkeypatch):
         VERSION = "2.1"
         def register(context):
             context.add_command("Tools > Greet", lambda app: app.message("Hello"))
-        '''))
+        '''), encoding="utf-8")
     monkeypatch.syspath_prepend(str(package))
     group = plugins.ENTRY_POINT_GROUP
     points = [importlib.metadata.EntryPoint("extra", "mb_extra", group),
@@ -359,7 +360,7 @@ def test_entry_point_plugins(make_window, folder, tmp_path, monkeypatch):
 
 
 def test_no_plugins_skips_third_party_ones(make_window, folder, monkeypatch):
-    (folder / "counter.py").write_text(COUNTER)
+    (folder / "counter.py").write_text(COUNTER, encoding="utf-8")
     win = make_window(plugins=False)
     assert find(win, "file:counter.py").state == PluginState.SKIPPED
     assert "Tools > Counting > Count Atoms" not in win.api.commands()
@@ -371,7 +372,7 @@ def test_no_plugins_skips_third_party_ones(make_window, folder, monkeypatch):
 
 
 def test_switching_plugins_off_and_on_takes_effect_at_once(make_window, folder):
-    (folder / "counter.py").write_text(COUNTER)
+    (folder / "counter.py").write_text(COUNTER, encoding="utf-8")
     win = make_window()
     dialog = PluginsDialog(win.plugins, win.theme, win)
     rows = [info.key for info in win.plugins.plugins]
@@ -442,7 +443,7 @@ def test_example_plugin(make_window, tmp_path, monkeypatch, errors):
     path = tmp_path / "ethanol.atoms"
     assert "ATOMS (*.atoms)" in write_filter()
     doc.save(str(path))
-    assert path.read_text().count("\n") >= 9
+    assert path.read_text(encoding="utf-8").count("\n") >= 9
     win.open_path(str(path))
     assert api.current.molecule.formula() == "C2H6O" and len(api.current.molecule.bonds) == 8
     assert errors == []

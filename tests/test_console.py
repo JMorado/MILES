@@ -149,7 +149,7 @@ def test_scripts_from_the_menu_and_the_command_line(window, tmp_path, monkeypatc
     script.write_text("from miles.core.chem import from_smiles\n"
                       "made, _ = from_smiles('CCN')\n"
                       "app.new(made, 'ethylamine')\n"
-                      "print('script ran as', __name__)\n")
+                      "print('script ran as', __name__)\n", encoding="utf-8")
     monkeypatch.setattr(QFileDialog, "getOpenFileName", lambda *args, **kwargs: (str(script), ""))
     window.run_script_dialog()
     assert window.current_canvas().doc.name == "ethylamine"
@@ -162,7 +162,7 @@ def test_scripts_from_the_menu_and_the_command_line(window, tmp_path, monkeypatc
     reported = []
     monkeypatch.setattr(sys, "excepthook", lambda *exc: reported.append(exc[0]))
     broken = tmp_path / "broken.py"
-    broken.write_text("raise ValueError('bad script')\n")
+    broken.write_text("raise ValueError('bad script')\n", encoding="utf-8")
     assert not window.run_script(str(broken))
     assert "ValueError: bad script" in window.stage.console.text()
     assert reported == [ValueError]   # also handed to the error dialog

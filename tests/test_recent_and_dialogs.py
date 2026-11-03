@@ -28,7 +28,7 @@ def window(app, tmp_path):
 
 
 def write_xyz(path):
-    path.write_text("3\nwater\nO 0 0 0.117\nH 0 0.757 -0.469\nH 0 -0.757 -0.469\n")
+    path.write_text("3\nwater\nO 0 0 0.117\nH 0 0.757 -0.469\nH 0 -0.757 -0.469\n", encoding="utf-8")
     return str(path)
 
 

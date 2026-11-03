@@ -6,12 +6,14 @@ import pytest
 from miles.core.fragments import group_fragment, ring_fragment
 from miles.files import session
 from miles.files.common import JobInfo
-from miles.files.formats import parse_text, read_file, sniff_format, write_file
-from miles.files.openbabel import input_format, read_text
+from miles.files.formats import parse_text, read_file, sniff_format, write_file, write_filter
+from miles.files.openbabel import input_format, read_text, write_extensions
 
 
 @pytest.mark.parametrize("ext", ["xyz", "sdf", "mol2", "pdb", "cml"])
 def test_round_trip(tmp_path, ext):
+    if ext not in write_extensions():
+        pytest.skip(f"this build of Open Babel cannot write .{ext} files")   # CML needs its XML formats
     m = group_fragment("ester").mol
     path = tmp_path / f"m.{ext}"
     write_file(str(path), m, JobInfo(title="methyl formate"))
@@ -19,6 +21,15 @@ def test_round_trip(tmp_path, ext):
     assert sorted(m2.symbols) == sorted(m.symbols)
     assert m2.formula() == m.formula()
     assert len(m2.bonds) == len(m.bonds)
+
+
+def test_save_dialog_offers_only_formats_that_can_be_written(monkeypatch):
+    monkeypatch.setattr("miles.files.openbabel.write_extensions", lambda: ["xyz", "sdf", "cml"])
+    assert "CML (*.cml)" in write_filter().split(";;")
+    monkeypatch.setattr("miles.files.openbabel.write_extensions", lambda: ["xyz", "sdf"])
+    choices = write_filter().split(";;")
+    assert "CML (*.cml)" not in choices and "XYZ (*.xyz)" in choices
+    assert "PDB (*.pdb)" in choices   # written by MILES itself, whatever Open Babel can do
 
 
 def test_multi_frame_xyz(tmp_path):
@@ -30,7 +41,7 @@ def test_multi_frame_xyz(tmp_path):
                        for a, (x, y, z) in zip(m.atoms, c, strict=True))
         text += f"{len(m)}\nframe {k}\n{rows}"
     path = tmp_path / "traj.xyz"
-    path.write_text(text)
+    path.write_text(text, encoding="utf-8")
     _, info = read_file(str(path))
     assert info.frames.shape == (4, len(m), 3)
     assert np.allclose(info.frames[2], m.coords + 0.2, atol=1e-3)
@@ -108,5 +119,5 @@ def test_sessions_with_styles_on_the_atoms_still_load(tmp_path):
 def test_qm_outputs_are_recognised(tmp_path):
     for phrase, code in (("Entering Gaussian System", "g09"), ("* O   R   C   A *", "orca")):
         path = tmp_path / f"{code}.out"
-        path.write_text(f"header\n {phrase}\n")
+        path.write_text(f"header\n {phrase}\n", encoding="utf-8")
         assert input_format(str(path)) == code

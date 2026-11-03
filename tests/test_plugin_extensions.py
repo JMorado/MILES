@@ -164,7 +164,7 @@ def titles(menu: QMenu) -> list[str]:
 
 
 def test_annotations_scene_items_status_and_menus(make_window, folder, errors):
-    (folder / "drawer.py").write_text(DRAWER)
+    (folder / "drawer.py").write_text(DRAWER, encoding="utf-8")
     win = make_window()
     calls = sys.modules["miles_user_plugins.drawer"].calls
     doc = win.api.new(from_smiles("O")[0], "water")   # O, H, H
@@ -234,7 +234,7 @@ def test_annotations_scene_items_status_and_menus(make_window, folder, errors):
 
 
 def test_a_failing_layer_is_reported_once_and_skipped(make_window, folder, errors):
-    (folder / "broken_layer.py").write_text(BROKEN_LAYER)
+    (folder / "broken_layer.py").write_text(BROKEN_LAYER, encoding="utf-8")
     win = make_window()
     calls = sys.modules["miles_user_plugins.broken_layer"].calls
     doc = win.api.new(from_smiles("CC")[0], "ethane")
@@ -253,7 +253,7 @@ def test_a_failing_layer_is_reported_once_and_skipped(make_window, folder, error
 
 
 def test_structure_sources(make_window, folder, errors):
-    (folder / "sources.py").write_text(SOURCES)
+    (folder / "sources.py").write_text(SOURCES, encoding="utf-8")
     first = make_window()
     first.plugins.set_enabled("miles.builtin_plugins.structure_lookup", False)   # no network in tests
     win = make_window()
@@ -283,17 +283,18 @@ def test_structure_sources(make_window, folder, errors):
 
 
 def test_fragment_libraries(make_window, folder, tmp_path, monkeypatch, capsys):
-    bundled = json.loads(DATA_FILE.read_text())
+    bundled = json.loads(DATA_FILE.read_text(encoding="utf-8"))
     glycine = dict(bundled["bio"][0], key="gly2", name="Glycine Again")
     library = {"Sugars": [dict(glycine, key="sugar", name="Not a Sugar")], "bio": [glycine]}
-    (folder / "sugars.json").write_text(json.dumps(library))
+    (folder / "sugars.json").write_text(json.dumps(library), encoding="utf-8")
     (folder / "library.py").write_text(
         "from pathlib import Path\n\ndef register(context):\n"
-        "    context.add_fragments(Path(__file__).with_name('sugars.json'))\n")
+        "    context.add_fragments(Path(__file__).with_name('sugars.json'))\n", encoding="utf-8")
     user = tmp_path / "fragments"
     user.mkdir()
-    (user / "mine.json").write_text(json.dumps({"Mine": [dict(glycine, key="mine", name="My Fragment")]}))
-    (user / "broken.json").write_text("[1, 2")
+    mine = {"Mine": [dict(glycine, key="mine", name="My Fragment")]}
+    (user / "mine.json").write_text(json.dumps(mine), encoding="utf-8")
+    (user / "broken.json").write_text("[1, 2", encoding="utf-8")
     monkeypatch.setenv("MILES_FRAGMENT_DIR", str(user))
     win = make_window()
     assert "broken.json" in capsys.readouterr().err   # reported, not fatal
@@ -398,8 +399,9 @@ def register(context):
 def test_settings_are_edited_in_the_settings_window(make_window, folder):
     from PySide6.QtWidgets import QCheckBox, QDoubleSpinBox, QLineEdit, QSpinBox
 
-    (folder / "settings.py").write_text(SETTINGS)
-    (folder / "too_new.py").write_text("REQUIRES_API = 99\ndef register(context):\n    pass\n")
+    (folder / "settings.py").write_text(SETTINGS, encoding="utf-8")
+    (folder / "too_new.py").write_text("REQUIRES_API = 99\ndef register(context):\n    pass\n",
+                                       encoding="utf-8")
     win = make_window()
     seen = sys.modules["miles_user_plugins.settings"].seen
     too_new = next(i for i in win.plugins.plugins if i.key == "file:too_new.py")
@@ -433,11 +435,12 @@ def test_a_changed_plugin_file_is_reloaded(make_window, folder):
     from miles.ui.plugins_dialog import PluginsDialog
 
     path = folder / "greeter.py"
-    path.write_text("def register(context):\n    context.add_command('Tools > Greet', lambda app: None)\n")
+    path.write_text("def register(context):\n    context.add_command('Tools > Greet', lambda app: None)\n",
+                    encoding="utf-8")
     win = make_window()
     assert "Tools > Greet" in win.api.commands()
     path.write_text("def register(context):\n"
-                    "    context.add_command('Tools > Greet Twice', lambda app: None)\n")
+                    "    context.add_command('Tools > Greet Twice', lambda app: None)\n", encoding="utf-8")
     dialog = PluginsDialog(win.plugins, win.theme, win)
     dialog.table.selectRow([info.key for info in win.plugins.plugins].index("file:greeter.py"))
     dialog.reload_selected()

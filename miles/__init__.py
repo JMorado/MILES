@@ -51,6 +51,8 @@ Units
 """
 
 import importlib
+import os
+import sys
 from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
@@ -281,6 +283,32 @@ if TYPE_CHECKING:
     )
 
 __version__ = "0.1.0"
+
+
+def _find_openbabel_data() -> None:
+    """Point Open Babel at its data files when the environment does not.
+
+    Open Babel reads force field parameters and descriptor tables from the
+    folder in ``BABEL_DATADIR``, or else from the path built into it. On
+    Windows that path is not updated when conda installs the package, and
+    conda sets ``BABEL_DATADIR`` only when an environment is activated, so
+    Python started directly (by a Start menu shortcut, or in a shell that
+    does not run the activation scripts) would find no data. The data is in
+    ``share/openbabel`` of the environment, or in a folder named after the
+    version inside it.
+    """
+    if os.environ.get("BABEL_DATADIR"):
+        return
+    root = os.path.join(sys.prefix, "share", "openbabel")
+    if not os.path.isdir(root):
+        return
+    for folder in [root, *sorted(os.path.join(root, name) for name in os.listdir(root))]:
+        if os.path.isfile(os.path.join(folder, "mmff94.ff")):
+            os.environ["BABEL_DATADIR"] = folder
+            return
+
+
+_find_openbabel_data()
 
 _LAZY = {
     # structures and files
