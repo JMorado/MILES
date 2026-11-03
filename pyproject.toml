@@ -17,6 +17,12 @@ dependencies = [
     "openbabel-wheel>=3.1.1",  # conda users: the conda-forge "openbabel" package
 ]
 
+[project.urls]
+Homepage = "https://github.com/JMorado/MILES"
+Documentation = "https://jmorado.github.io/MILES/"
+Source = "https://github.com/JMorado/MILES"
+Issues = "https://github.com/JMorado/MILES/issues"
+
 [project.optional-dependencies]
 dev = ["pytest", "ruff", "mypy", "ipykernel", "jupyter_client"]
 docs = ["sphinx", "furo"]

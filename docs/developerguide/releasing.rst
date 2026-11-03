@@ -103,10 +103,11 @@ You can build the conda package locally the same way:
 The recipe
 ==========
 
-The package is called ``miles-studio`` on PyPI and conda-forge, because
-``miles`` was already taken on PyPI. Everything else keeps the short name:
-the module (``import miles``), the ``miles`` command and the
-``miles.plugins`` entry point group.
+The package is called ``miles-studio``, the name it will have on PyPI and
+conda-forge too, because ``miles`` was already taken on PyPI. It is not
+published on PyPI yet; releases attach the wheel to the GitHub release.
+Everything else keeps the short name: the module (``import miles``), the
+``miles`` command and the ``miles.plugins`` entry point group.
 
 ``recipe/recipe.yaml`` describes the conda package. It is a ``noarch:
 python`` package, so one build serves every platform, and it declares the

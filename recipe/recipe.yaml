@@ -59,5 +59,8 @@ about:
     molecules. Build molecules by clicking and dragging, open about 150
     chemistry file formats through Open Babel, download proteins by PDB code
     and export publication pictures.
+  homepage: https://github.com/JMorado/MILES
+  repository: https://github.com/JMorado/MILES
+  documentation: https://jmorado.github.io/MILES/
   license: BSD-3-Clause
   license_file: LICENSE

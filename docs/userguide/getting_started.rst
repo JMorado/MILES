@@ -11,9 +11,18 @@ there, but nothing checks that it does.
 
 MILES is a Python package. It needs Python 3.12 or newer and four
 libraries: PySide6 (Qt), NumPy, PyOpenGL and Open Babel. The simplest way to
-get all of them is a conda environment from conda-forge. The repository
-contains an ``environment.yml`` file for this; with `micromamba
-<https://mamba.readthedocs.io>`_ the steps are:
+get MILES with all of them is a conda environment. With `micromamba
+<https://mamba.readthedocs.io>`_:
+
+.. code-block:: bash
+
+   micromamba create -n miles -c jmorado -c conda-forge miles-studio
+
+This creates an environment called ``miles`` with MILES from the
+``jmorado`` channel and everything it needs from conda-forge.
+
+To install from a copy of the repository instead, for example to try
+changes that are not released yet, use its ``environment.yml`` file:
 
 .. code-block:: bash
 
